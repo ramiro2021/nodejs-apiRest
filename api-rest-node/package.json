@@ -4,6 +4,7 @@
   "description": "Api rest con NodeJS",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Ramiro2021",
@@ -17,6 +18,7 @@
     "moment": "^2.27.0",
     "mongoose": "^5.9.25",
     "mongoose-paginate-v2": "^1.3.9",
+    "nodemon": "^2.0.4",
     "validator": "^13.1.1"
   }
 }
