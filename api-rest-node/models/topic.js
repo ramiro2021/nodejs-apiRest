@@ -22,3 +22,5 @@ var TopicSchema = Schema({
   user: { type: Schema.ObjectId, ref: "User" },
   comments: [CommentSchema],
 });
+
+module.exports = mongoose.model("Topic", TopicSchema);

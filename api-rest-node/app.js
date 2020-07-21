@@ -7,13 +7,14 @@ var bodyParser = require("body-parser");
 // Ejecutar express
 var app = express();
 // Cargar archivos de rutas
-
+var user_routes = require("./routes/user");
 // Middlewares - funcionalidades q se ejecutan antes de llegar a las acciones de los controladores
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // CORS
 
 // Reescribir rutas
+app.use("/api", user_routes);
 
 // Ruta de prueba
 app.get("/prueba", (req, res) => {
