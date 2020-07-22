@@ -3,7 +3,7 @@
 var validator = require("validator");
 var User = require("../models/user");
 var bcrypt = require("bcrypt-nodejs");
-
+var jwt = require("../services/jwt");
 var controller = {
   probando: function (req, res) {
     return res.status(200).send({
@@ -17,6 +17,7 @@ var controller = {
     });
   },
 
+  // register
   save: function (req, res) {
     // Traer parametros de la peticion
     var params = req.body;
@@ -97,6 +98,63 @@ var controller = {
         user,
       });
     }
+  },
+
+  login: function (req, res) {
+    // Traer parametros de la peticion
+    var params = req.body;
+    // Validar datos
+    var validate_email =
+      !validator.isEmpty(params.email) && validator.isEmail(params.email);
+    var validate_password = !validator.isEmpty(params.password);
+
+    if (!validate_email || !validate_password) {
+      return res.status(200).send({
+        message: "Los datos son incorrectos, verificalos nuevamente",
+        user,
+      });
+    }
+
+    // Buscar usuarios q coincidan con el email
+    User.findOne({ email: params.email.toLowerCase() }, (err, user) => {
+      if (err) {
+        return res.status(500).send({
+          message: "Error al intentar identificarse ",
+        });
+      }
+      if (!user) {
+        return res.status(404).send({
+          message:
+            "El usuario no existe, debe registrarse antes de intentar logear ",
+        });
+      }
+      //Si lo encuentra
+      //Comprobar la contraseñá (coincidencia de email y password / bcrypt)
+      bcrypt.compare(params.password, user.password, (err, check) => {
+        // si es correcto
+        if (check) {
+          // Generar token de jwt y devolverlo
+          if (params.gettoken) {
+            //  Devolver los datos
+            return res.status(200).send({
+              token: jwt.createToken(user),
+            });
+          } else {
+            // Limpiar password
+            user.password = undefined;
+            //  Devolver los datos
+            return res.status(200).send({
+              status: "success",
+              user,
+            });
+          }
+        } else {
+          return res.status(404).send({
+            message: "El usuario o contraseña no son correctas ",
+          });
+        }
+      });
+    });
   },
 };
 
