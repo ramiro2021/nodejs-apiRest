@@ -17,7 +17,7 @@ var controller = {
     });
   },
 
-  // register
+  // register de nuevo usuario
   save: function (req, res) {
     // Traer parametros de la peticion
     var params = req.body;
@@ -99,7 +99,7 @@ var controller = {
       });
     }
   },
-
+  // logeo de usuario existente
   login: function (req, res) {
     // Traer parametros de la peticion
     var params = req.body;
@@ -154,6 +154,12 @@ var controller = {
           });
         }
       });
+    });
+  },
+
+  update: function (req, res) {
+    return res.status(200).send({
+      message: "metodo de actualizacion de usuario",
     });
   },
 };
