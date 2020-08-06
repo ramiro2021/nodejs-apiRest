@@ -6,7 +6,7 @@ const { request } = require("express");
 var secret = "clave-secreta-para-generar-el-token-2021";
 
 exports.authenticated = function (req, res, next) {
-  console.log("EL MIDDLEWARE DE AUTHENTICACION SE ESTA EJECUTANDO!! ");
+  // console.log("EL MIDDLEWARE DE AUTHENTICACION SE ESTA EJECUTANDO!! ");
 
   //comprobar si llega autorizacion
   if (!req.headers.authorization) {
