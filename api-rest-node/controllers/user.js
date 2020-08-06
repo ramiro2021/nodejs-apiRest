@@ -22,17 +22,25 @@ var controller = {
     // Traer parametros de la peticion
     var params = req.body;
     //  Validar los datos
-    var validate_name = !validator.isEmpty(params.name);
-    var validate_surname = !validator.isEmpty(params.surname);
-    var validate_email =
-      !validator.isEmpty(params.email) && validator.isEmail(params.email);
-    var validate_password = !validator.isEmpty(params.password);
-    // console.log(
-    //   validate_name,
-    //   validate_surname,
-    //   validate_email,
-    //   validate_password
-    // );
+    try {
+      var validate_name = !validator.isEmpty(params.name);
+      var validate_surname = !validator.isEmpty(params.surname);
+      var validate_email =
+        !validator.isEmpty(params.email) && validator.isEmail(params.email);
+      var validate_password = !validator.isEmpty(params.password);
+      // console.log(
+      //   validate_name,
+      //   validate_surname,
+      //   validate_email,
+      //   validate_password
+      // );
+    } catch (error) {
+      return res.status(500).send({
+        message: "Faltan datos para registrar",
+
+      });
+    }
+
     if (
       validate_name &&
       validate_surname &&
@@ -104,9 +112,17 @@ var controller = {
     // Traer parametros de la peticion
     var params = req.body;
     // Validar datos
-    var validate_email =
-      !validator.isEmpty(params.email) && validator.isEmail(params.email);
-    var validate_password = !validator.isEmpty(params.password);
+    try {
+      var validate_email =
+        !validator.isEmpty(params.email) && validator.isEmail(params.email);
+      var validate_password = !validator.isEmpty(params.password);
+    } catch (error) {
+      return res.status(200).send({
+        message: "Faltan datos por enviar",
+
+      });
+    }
+
 
     if (!validate_email || !validate_password) {
       return res.status(200).send({
@@ -158,9 +174,72 @@ var controller = {
   },
 
   update: function (req, res) {
-    return res.status(200).send({
-      message: "metodo de actualizacion de usuario",
-    });
+    // traer datos del usuario
+    var params = req.body;
+    // Validar datos
+    try {
+      var validate_name = !validator.isEmpty(params.name);
+      var validate_surname = !validator.isEmpty(params.surname);
+      var validate_email = !validator.isEmpty(params.email) && validator.isEmail(params.email);
+    } catch (err) {
+      return res.status(200).send({
+        message: "faltan datos por enviar",
+        params
+      });
+    }
+
+
+
+    // Eliminar propiedades innecesarias
+    delete params.password;
+
+    // traer id (sub => services/jwt => payload => sub/id)
+    var userId = req.user.sub;
+
+    // Comprobar si el email es unico
+    if (req.user.email != params.email) {
+      User.findOne({ email: params.email.toLowerCase() }, (err, user) => {
+        if (err) {
+          return res.status(500).send({
+            message: "Error al intentar identificarse ",
+          });
+        }
+        if (user && user.email == params.email) {
+          return res.status(200).send({
+            message:
+              "El email no puede ser modificado ",
+          });
+        }
+      });
+    } else {
+
+      // Buscar y actualizar documento de la base de datos
+      //(condicion, datos a actualizar , opciones, callback)
+      User.findOneAndUpdate({ _id: userId }, params, { new: true }, (err, userUpdated) => {
+
+        if (err) {
+          return res.status(500).send({
+            status: 'error',
+            message: 'error al actualizar el usuario'
+
+          });
+        }
+        if (!userUpdated) {
+          return res.status(500).send({
+            status: 'error',
+            message: 'No se a actualizado el usuario'
+
+          });
+        }
+
+        // Devolver una respuesta
+        return res.status(200).send({
+          status: 'success',
+          user: userUpdated
+
+        });
+      })
+    }
   },
 };
 

@@ -3,11 +3,14 @@
 var mongoose = require("mongoose");
 var app = require("./app");
 var port = process.env.PORT || 3999;
+
+mongoose.set('useFindAndModify', false);
+
 mongoose.Promise = global.Promise;
 
 // conexion a base de datos
 mongoose
-  .connect("mongodb://localhost:27017/api_rest_node", { useNewUrlParser: true })
+  .connect("mongodb://localhost:27017/api_rest_node", { useUnifiedTopology: true, useNewUrlParser: true })
   .then(() => {
     console.log(
       "La conexion a la base de datos de mongo se realizo exitosamente"
