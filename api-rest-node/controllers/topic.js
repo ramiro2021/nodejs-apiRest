@@ -104,7 +104,67 @@ var controller = {
         // Devolver resultado (topics, total de topic, total de paginas)
 
 
+    },
+
+    getTopicsByUser: function (req, res) {
+
+        // conseguir el id del usuario
+        // parametro por url
+        var userId = req.params.user;
+        // hacer un find con una condicion de usuario
+        Topic.find({
+            user: userId
+        })
+            .sort([['date', 'descending']])
+            .exec((err, topics) => {
+                if (err) {
+                    // devolver respuesta
+                    return res.status(500).send({
+                        message: 'Error en la peticion de get my topics'
+                    })
+                }
+                if (!topics) {
+                    // devolver respuesta
+                    return res.status(404).send({
+                        message: 'No se encuentran topicos para mostrar'
+                    })
+                }
+
+                // devolver respuesta
+                return res.status(200).send({
+                    status: 'success',
+                    topics
+                })
+            })
+
+    },
+
+    getTopic: function (req, res) {
+
+        // sacar el id del topic de la url
+        var topicId = req.params.id;
+        // find por id del topic
+        Topic.findById(topicId)
+            .populate('user')
+            .exec((err, topic) => {
+                if (err) {
+                    // devovler una respuesta
+
+                    return res.status(500).send({
+                        status: 'error',
+                        message: 'No se han encontrado topics para mostrar'
+                    })
+                }
+                // devovler una respuesta
+
+                return res.status(200).send({
+                    status: 'success',
+                    topic
+                })
+            })
+
     }
+
 
 
 };
