@@ -162,9 +162,11 @@ var controller = {
             // Limpiar password
             user.password = undefined;
             //  Devolver los datos
+
             return res.status(200).send({
               status: "success",
-              user,
+              user
+
             });
           }
         } else {
@@ -212,6 +214,33 @@ var controller = {
             message:
               "El email no puede ser modificado ",
           });
+        } else {
+          // Buscar y actualizar documento de la base de datos
+          //(condicion, datos a actualizar , opciones, callback)
+          User.findOneAndUpdate({ _id: userId }, params, { new: true }, (err, userUpdated) => {
+
+            if (err) {
+              return res.status(500).send({
+                status: 'error',
+                message: 'error al actualizar el usuario'
+
+              });
+            }
+            if (!userUpdated) {
+              return res.status(500).send({
+                status: 'error',
+                message: 'No se a actualizado el usuario'
+
+              });
+            }
+
+            // Devolver una respuesta
+            return res.status(200).send({
+              status: 'success',
+              user: userUpdated
+
+            });
+          })
         }
       });
     } else {

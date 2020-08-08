@@ -156,14 +156,94 @@ var controller = {
                     })
                 }
                 // devovler una respuesta
-
                 return res.status(200).send({
                     status: 'success',
                     topic
                 })
             })
 
+    },
+
+    update: function (req, res) {
+        // traer id de la url
+        var topicId = req.params.id;
+        console.log(topicId);
+        // traer datos desde post
+        var params = req.body;
+        // Validar datos
+        try {
+            var validate_title = !validator.isEmpty(params.title);
+            var validate_content = !validator.isEmpty(params.content);
+            var validate_lang = !validator.isEmpty(params.lang);
+
+        } catch (err) {
+            return res.status(200).send({
+                status: 'error',
+                message: 'Error! Faltan datos por enviar'
+            })
+        }
+
+        // crear json con los datos modificables
+        if (validate_title && validate_content && validate_lang) {
+            var update = {
+                title: params.title,
+                content: params.content,
+                code: params.code,
+                lang: params.lang
+            }
+
+            // find and update del topic por id y por id del usuario
+            Topic.findOneAndUpdate({ _id: topicId, user: req.user.sub }, update, { new: true }, (err, topicUpdate) => {
+                if (err) {
+                    // devovler una respuesta
+                    return res.status(500).send({
+                        status: 'error',
+                        message: 'No se ah podido actualizar'
+                    })
+                }
+                // devovler una respuesta
+                return res.status(200).send({
+                    status: 'success',
+                    topic: topicUpdate
+                })
+            });
+
+        } else {
+            // devovler una respuesta
+            return res.status(200).send({
+                status: 'error',
+                message: 'La validacion de los datos no es correcta'
+            })
+        }
+
+
+    },
+
+    delete: function (req, res) {
+        // traer el id de la url
+        var topicId = req.params.id;
+        // find and delete por topic di y por user id
+        Topic.findByIdAndDelete({ _id: topicId, user: req.user.sub }, (err, topicRemove) => {
+
+            if (err) {
+                // devovler una respuesta
+                return res.status(500).send({
+                    status: 'error',
+                    message: 'Topico no se ah podido eliminar',
+
+                })
+            }
+            // devovler una respuesta
+            return res.status(200).send({
+                status: 'success',
+                message: 'Topico eliminado',
+                topic: topicRemove
+            })
+        });
+
+
     }
+
 
 
 

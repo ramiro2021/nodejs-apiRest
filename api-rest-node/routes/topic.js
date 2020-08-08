@@ -16,4 +16,7 @@ router.get('/user-topics/:user', TopicController.getTopicsByUser);
 // traer un solo topic
 router.get('/topic/:id', TopicController.getTopic);
 
+router.put('/topic/:id', md_auth.authenticated, TopicController.update);
+
+router.delete('/topic/:id', md_auth.authenticated, TopicController.delete);
 module.exports = router;
