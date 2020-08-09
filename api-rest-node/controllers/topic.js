@@ -242,9 +242,39 @@ var controller = {
         });
 
 
+    },
+
+    search: function (req, res) {
+
+        // traer parametros de busqueda en la url
+        var searchString = req.params.search;
+
+        // find or
+        Topic.find({
+            "$or": [
+                { "title": { "$regex": searchString, "$options": "i" } },
+                { "content": { "$regex": searchString, "$options": "i" } },
+                { "code": { "$regex": searchString, "$options": "i" } },
+                { "lang": { "$regex": searchString, "$options": "i" } },
+            ]
+        })
+            .sort([['date', 'descending']])
+            .exec((err, topics) => {
+                if (err) {
+                    // devovler una respuesta
+                    return res.status(500).send({
+                        status: 'error',
+                        message: 'ERROR AL BUSCAR'
+                    })
+                }
+                // devovler una respuesta
+                return res.status(200).send({
+                    status: 'success',
+                    topics
+                })
+            })
+
     }
-
-
 
 
 };
